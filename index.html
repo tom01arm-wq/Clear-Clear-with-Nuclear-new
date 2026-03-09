@@ -272,13 +272,6 @@
                     <!-- Fission Images -->
                     <div class="mt-6 space-y-4">
                         <div class="text-center">
-                            <img src="ปฏิกิริยาฟิชชัน4.jpg" 
-                                 alt="ปฏิกิริยาฟิชชันของยูเรเนียม-235" 
-                                 class="rounded-lg shadow-md mx-auto max-w-full"
-                                 loading="lazy">
-                            <p class="text-xs text-gray-600 mt-2">ปฏิกิริยาฟิชชัน: นิวตรอนชนยูเรเนียม-235</p>
-                        </div>
-                        <div class="text-center">
                             <img src="ปฏิกิริยาฟิชชัน3.jpg" 
                                  alt="ปฏิกิริยาลูกโซ่ฟิชชัน" 
                                  class="rounded-lg shadow-md mx-auto max-w-full"
@@ -329,19 +322,19 @@
                 <h4 class="text-2xl font-bold text-center mb-6">เปรียบเทียบกำลังผลิต</h4>
                 <div class="grid md:grid-cols-3 gap-6 text-center">
                     <div class="bg-white bg-opacity-20 p-6 rounded-xl backdrop-blur">
-                        <p class="text-4xl font-bold mb-2">1x</p>
-                        <p class="text-sm">ฟิชชัน (Fission)</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 p-6 rounded-xl backdrop-blur">
-                        <p class="text-4xl font-bold mb-2">4x</p>
+                        <p class="text-4xl font-bold mb-2">4M</p>
                         <p class="text-sm">ฟิวชัน (Fusion)</p>
                     </div>
                     <div class="bg-white bg-opacity-20 p-6 rounded-xl backdrop-blur">
-                        <p class="text-4xl font-bold mb-2">4M x</p>
+                        <p class="text-4xl font-bold mb-2">1M</p>
+                        <p class="text-sm">ฟิชชัน (Fission)</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-6 rounded-xl backdrop-blur">
+                        <p class="text-4xl font-bold mb-2">1</p>
                         <p class="text-sm">เทียบกับเผาไหม้น้ำมัน/ถ่านหิน</p>
                     </div>
                 </div>
-                <p class="text-center mt-4 text-sm opacity-90">ที่มา: IAEA - International Atomic Energy Agency</p>
+                <p class="text-center mt-4 text-sm opacity-90">ที่มา: https://shorturl.asia/7rAsx</p>
             </div>
 
             <!-- Radiation Section -->
@@ -538,9 +531,18 @@
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-syringe text-pink-500 mt-1 mr-3"></i>
-                                <span>ฆ่าเชื้ออุปกรณ์ทางการแพทย์ด้วยรังสีแกมมา</span>
+                                <span class="cursor-pointer hover:text-pink-600 font-medium" onclick="toggleImage('gamma-sterilization')">ฆ่าเชื้ออุปกรณ์ทางการแพทย์ด้วยรังสีแกมมา</span>
                             </li>
                         </ul>
+                        
+                        <!-- Gamma Sterilization Image (Hidden by default) -->
+                        <div id="gamma-sterilization" class="hidden mt-6 text-center">
+                            <img src="ห้องฆ่าเชื้อ.png" 
+                                 alt="ฆ่าเชื้ออุปกรณ์ทางการแพทย์ด้วยรังสีแกมมา" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">ฆ่าเชื้ออุปกรณ์ทางการแพทย์ด้วยรังสีแกมมา</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -729,6 +731,10 @@
             <p class="mb-4">เอกสารเรียบเรียงเนื้อหาเกี่ยวกับนิวเคลียร์ สื่อสารด้วยภาษาที่เข้าใจง่าย</p>
             <p class="text-sm">ยึดตามแหล่งข้อมูลทางวิชาการที่ตรวจสอบได้ | IAEA และหน่วยงานระดับนานาชาติ</p>
             <div class="mt-8 pt-8 border-t border-gray-700">
+                <p class="text-sm mb-2"><strong>ผู้จัดทำ:</strong></p>
+                <p class="text-sm mb-2">นาย ณัฐชนน สุภาพเจริญกุล</p>
+                <p class="text-sm mb-2">นาย ธีรเดช ทองคำ</p>
+                <p class="text-sm mb-4">นางสาว รัญชิดา แสวงผล</p>
                 <p class="text-sm">&copy; 2024 Clear & Clear with Nuclear. All rights reserved.</p>
             </div>
         </div>
