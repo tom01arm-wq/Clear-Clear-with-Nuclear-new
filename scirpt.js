@@ -170,6 +170,14 @@ function checkAnswer(idx, selectedBtn) {
     }, 900);  // หน่วงเวลา 900 มิลลิวินาที
 }
 
+// ฟังก์ชันสำหรับแสดง/ซ่อนรูปภาพ
+function toggleImage(imageId) {
+    const imageElement = document.getElementById(imageId);
+    if (imageElement) {
+        imageElement.classList.toggle('hidden');
+    }
+}
+
 // กำหนด event listener สำหรับเริ่มทำงานเมื่อโหลดหน้าเว็บเสร็จ
 document.addEventListener('DOMContentLoaded', () => {
     loadQuiz();           // เริ่มแบบทดสอบ

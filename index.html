@@ -272,14 +272,14 @@
                     <!-- Fission Images -->
                     <div class="mt-6 space-y-4">
                         <div class="text-center">
-                            <img src="ปฏิกิริยาฟิชชัน.png" 
+                            <img src="ปฏิกิริยาฟิชชัน4.jpg" 
                                  alt="ปฏิกิริยาฟิชชันของยูเรเนียม-235" 
                                  class="rounded-lg shadow-md mx-auto max-w-full"
                                  loading="lazy">
                             <p class="text-xs text-gray-600 mt-2">ปฏิกิริยาฟิชชัน: นิวตรอนชนยูเรเนียม-235</p>
                         </div>
                         <div class="text-center">
-                            <img src="ปฏิกิริยาฟิชชัน2.png" 
+                            <img src="ปฏิกิริยาฟิชชัน3.jpg" 
                                  alt="ปฏิกิริยาลูกโซ่ฟิชชัน" 
                                  class="rounded-lg shadow-md mx-auto max-w-full"
                                  loading="lazy">
@@ -310,7 +310,7 @@
                     
                     <!-- Fusion Image -->
                     <div class="mt-6 text-center">
-                        <img src="ปฏิกิริยาฟิวชั่น.png" 
+                        <img src="ปฏิกิริยาฟิวชั่น4.png" 
                              alt="ปฏิกิริยาฟิวชันของไฮโดรเจน" 
                              class="rounded-lg shadow-md mx-auto max-w-full"
                              loading="lazy">
@@ -384,6 +384,16 @@
 
                 <div class="bg-gray-100 p-6 rounded-xl">
                     <h5 class="font-bold mb-4">ความสามารถในการทะลุทะลวง</h5>
+                    
+                    <!-- Radiation Penetration Image -->
+                    <div class="mb-6 text-center">
+                        <img src="รังสี.png" 
+                             alt="ความสามารถในการทะลุทะลวงของรังสีแอลฟา เบตา แกมมา" 
+                             class="rounded-lg shadow-md mx-auto max-w-full"
+                             loading="lazy">
+                        <p class="text-xs text-gray-600 mt-2">ความสามารถในการทะลุทะลวง: แอลฟา < เบตา < แกมมา</p>
+                    </div>
+                    
                     <div class="space-y-3">
                         <div class="flex items-center">
                             <span class="w-20 font-medium">แอลฟา (α)</span>
@@ -397,7 +407,7 @@
                             <div class="flex-1 bg-gray-300 h-4 rounded-full mx-4 overflow-hidden">
                                 <div class="bg-orange-500 h-full rounded-full" style="width: 40%"></div>
                             </div>
-                            <span class="text-sm text-gray-600">ทะลุอลูมิเนียม</span>
+                            <span class="text-sm text-gray-600">หยุดด้วยอลูมิเนียม</span>
                         </div>
                         <div class="flex items-center">
                             <span class="w-20 font-medium">แกมมา (γ)</span>
@@ -463,11 +473,12 @@
                         </div>
                         <div class="flex items-center justify-center">
                             <div class="relative">
-                                <div class="w-48 h-48 border-4 border-blue-400 rounded-full flex items-center justify-center bg-white">
-                                    <i class="fas fa-atom text-6xl text-blue-500"></i>
-                                </div>
-                                <div class="absolute -top-4 -right-4 bg-yellow-400 w-16 h-16 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-bolt text-2xl"></i>
+                                <img src="โรงไฟฟ้านิวเคลีย.gif" 
+                                     alt="โรงไฟฟ้านิวเคลียร์" 
+                                     class="rounded-lg shadow-xl mx-auto max-w-sm"
+                                     loading="lazy">
+                                <div class="absolute -bottom-10 -right-1 bg-white rounded-xl shadow-lg p-3">
+                                    <p class="text-sm font-bold text-blue-600">กระบวนการทำงานของโรงไฟฟ้านิวเคลียร์</p>
                                 </div>
                             </div>
                         </div>
@@ -491,7 +502,7 @@
                         <ul class="space-y-3 text-gray-700">
                             <li class="flex items-start">
                                 <i class="fas fa-x-ray text-red-500 mt-1 mr-3"></i>
-                                <span>ถ่ายภาพรังสี X-ray เพื่อตรวจสอบความผิดปกติของร่างกาย</span>
+                                <span class="cursor-pointer hover:text-red-600 font-medium" onclick="toggleImage('xray-image')">ถ่ายภาพรังสี X-ray เพื่อตรวจสอบความผิดปกติของร่างกาย</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-vial text-red-500 mt-1 mr-3"></i>
@@ -502,6 +513,15 @@
                                 <span>I-131 ตรวจสอบการทำงานของต่อมไทรอยด์</span>
                             </li>
                         </ul>
+                        
+                        <!-- X-ray Image (Hidden by default) -->
+                        <div id="xray-image" class="hidden mt-6 text-center">
+                            <img src="รังสีx.jpg" 
+                                 alt="การถ่ายภาพรังสี X-ray เพื่อตรวจสอบความผิดปกติของร่างกาย" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">การถ่ายภาพรังสี X-ray: ตรวจสอบความผิดปกติของร่างกาย</p>
+                        </div>
                     </div>
                     <div class="bg-pink-50 rounded-2xl p-8 border-l-4 border-pink-500">
                         <h5 class="text-xl font-bold text-pink-700 mb-4">
