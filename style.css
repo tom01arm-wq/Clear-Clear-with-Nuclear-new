@@ -58,6 +58,51 @@
     transform: translateX(-50%);
 }
 
+/* ตำแหน่งอิเล็กตรอนเพิ่มเติมบนวงโคจร */
+.electron-pos-bottom {
+    top: auto;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.electron-pos-left {
+    top: 50%;
+    left: -8px;
+    transform: translateY(-50%);
+}
+
+.electron-pos-right {
+    top: 50%;
+    left: auto;
+    right: -8px;
+    transform: translateY(-50%);
+}
+
+/* อิเล็กตรอนเพิ่มเติมเปลี่ยนสีตามพลังงาน */
+.electron-energy-mid {
+    background-color: #f39c12;
+    box-shadow: 0 0 12px rgba(243, 156, 18, 0.9);
+    animation: electron-appear 0.3s ease-out;
+}
+
+.electron-energy-high {
+    background-color: #e74c3c;
+    box-shadow: 0 0 14px rgba(231, 76, 60, 1);
+    animation: electron-appear 0.3s ease-out;
+}
+
+.electron-energy-critical {
+    background-color: #ff0040;
+    box-shadow: 0 0 18px rgba(255, 0, 64, 1);
+    animation: electron-appear 0.3s ease-out;
+}
+
+@keyframes electron-appear {
+    0% { opacity: 0; transform: scale(0); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
 .atom-card:focus-visible {
     outline: 3px solid #60a5fa;
     outline-offset: 6px;
@@ -85,4 +130,234 @@
         transform: scale(1);
         box-shadow: 0 0 20px rgba(231, 76, 60, 0.95);
     }
+}
+
+/* Stage 1: นิวเคลียสสั่น */
+.nucleus.shake {
+    animation: shake-nucleus 0.8s ease-in-out;
+}
+
+@keyframes shake-nucleus {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    10% { transform: translate(-3px, -2px) scale(1.05); }
+    20% { transform: translate(4px, 1px) scale(1.1); }
+    30% { transform: translate(-2px, 3px) scale(1.05); }
+    40% { transform: translate(3px, -1px) scale(1.15); }
+    50% { transform: translate(-4px, 2px) scale(1.1); }
+    60% { transform: translate(2px, -3px) scale(1.05); }
+    70% { transform: translate(-1px, 4px) scale(1.1); }
+    80% { transform: translate(3px, -2px) scale(1.05); }
+    90% { transform: translate(-2px, 1px) scale(1.02); }
+}
+
+/* Stage 1: วงโคจรเร่งความเร็ว */
+.atom-card.stage-1 .orbit-1 { animation-duration: 1s !important; border-color: rgba(231, 76, 60, 0.5); }
+.atom-card.stage-1 .orbit-2 { animation-duration: 1.5s !important; border-color: rgba(231, 76, 60, 0.4); }
+.atom-card.stage-1 .orbit-3 { animation-duration: 2s !important; border-color: rgba(231, 76, 60, 0.3); }
+.atom-card.stage-1 .electron { background-color: #e74c3c; box-shadow: 0 0 12px rgba(231, 76, 60, 0.9); }
+
+/* Stage 2: ปล่อยอนุภาค */
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.particle-alpha {
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle, #e74c3c, #c0392b);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+    animation: emit-particle 1.2s ease-out forwards;
+}
+
+.particle-beta {
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle, #f39c12, #e67e22);
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+    animation: emit-particle 0.8s ease-out forwards;
+}
+
+.particle-gamma {
+    width: 6px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(155, 89, 182, 0.9), transparent);
+    border-radius: 3px;
+    box-shadow: 0 0 15px rgba(155, 89, 182, 0.8);
+    animation: emit-gamma 1s ease-out forwards;
+}
+
+@keyframes emit-particle {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0.3);
+    }
+}
+
+@keyframes emit-gamma {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scaleY(0.2);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translate(var(--dx), var(--dy)) scaleY(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(var(--dx) * 2), calc(var(--dy) * 2)) scaleY(0.5);
+    }
+}
+
+/* Stage 3: Flash */
+.atom-flash {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), transparent 70%);
+    border-radius: 50%;
+    z-index: 15;
+    pointer-events: none;
+    animation: flash-effect 0.6s ease-out forwards;
+}
+
+@keyframes flash-effect {
+    0% { opacity: 1; transform: scale(0.3); }
+    50% { opacity: 0.8; transform: scale(1.5); }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+/* ข้อความความรู้ */
+.atom-knowledge {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    z-index: 20;
+    pointer-events: none;
+    animation: knowledge-pop 3s ease-out forwards;
+}
+
+@keyframes knowledge-pop {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ตัวบอก stage */
+.atom-stage-indicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+}
+
+/* Energy Meter: นิวเคลียสเรืองแสงตามพลังงาน */
+.nucleus.energy-low {
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.8);
+    background-color: #27ae60;
+}
+
+.nucleus.energy-mid {
+    box-shadow: 0 0 25px rgba(243, 156, 18, 0.9);
+    background-color: #f39c12;
+    animation: nucleus-pulse-mid 1s ease-in-out infinite;
+}
+
+.nucleus.energy-high {
+    box-shadow: 0 0 35px rgba(231, 76, 60, 1);
+    background-color: #e74c3c;
+    animation: nucleus-pulse-high 0.4s ease-in-out infinite;
+}
+
+.nucleus.energy-critical {
+    box-shadow: 0 0 50px rgba(231, 76, 60, 1), 0 0 80px rgba(231, 76, 60, 0.5);
+    background-color: #c0392b;
+    animation: nucleus-pulse-critical 0.2s ease-in-out infinite;
+}
+
+@keyframes nucleus-pulse-mid {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@keyframes nucleus-pulse-high {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+@keyframes nucleus-pulse-critical {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 50px rgba(231, 76, 60, 1); }
+    50% { transform: scale(1.25); box-shadow: 0 0 80px rgba(231, 76, 60, 1), 0 0 120px rgba(255, 0, 0, 0.4); }
+}
+
+/* Energy Meter: วงโคจรเร่งตามพลังงาน */
+.atom-card.energy-stage-mid .orbit-1 { animation-duration: 2.5s !important; }
+.atom-card.energy-stage-mid .orbit-2 { animation-duration: 4s !important; }
+.atom-card.energy-stage-mid .orbit-3 { animation-duration: 6s !important; }
+
+.atom-card.energy-stage-high .orbit-1 { animation-duration: 1.5s !important; border-color: rgba(231, 76, 60, 0.5); }
+.atom-card.energy-stage-high .orbit-2 { animation-duration: 2.5s !important; border-color: rgba(231, 76, 60, 0.4); }
+.atom-card.energy-stage-high .orbit-3 { animation-duration: 3.5s !important; border-color: rgba(231, 76, 60, 0.3); }
+
+.atom-card.energy-stage-critical .orbit-1 { animation-duration: 0.6s !important; border-color: rgba(231, 76, 60, 0.7); }
+.atom-card.energy-stage-critical .orbit-2 { animation-duration: 1s !important; border-color: rgba(231, 76, 60, 0.6); }
+.atom-card.energy-stage-critical .orbit-3 { animation-duration: 1.5s !important; border-color: rgba(231, 76, 60, 0.5); }
+.atom-card.energy-stage-critical .electron { background-color: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 1); }
+
+/* Energy Meter: Decay explosion */
+.decay-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 3px solid rgba(231, 76, 60, 0.8);
+    pointer-events: none;
+    z-index: 15;
+    animation: decay-ring-expand 1s ease-out forwards;
+}
+
+@keyframes decay-ring-expand {
+    0% { width: 40px; height: 40px; opacity: 1; }
+    100% { width: 350px; height: 350px; opacity: 0; }
+}
+
+/* Energy Meter: Cooldown overlay */
+.cooldown-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: none;
+    animation: cooldown-fade 3s ease-out forwards;
+}
+
+.cooldown-text {
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+@keyframes cooldown-fade {
+    0% { opacity: 1; }
+    80% { opacity: 0.6; }
+    100% { opacity: 0; }
 }

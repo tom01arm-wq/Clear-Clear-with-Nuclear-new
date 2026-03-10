@@ -139,7 +139,69 @@
                                 <div class="electron"></div>
                             </div>
                         </div>
-                        <p class="text-center text-sm text-gray-600 mt-3">คลิกอะตอมเพื่อกระตุ้นนิวเคลียส</p>
+                        <p class="text-center text-sm text-gray-600 mt-3" id="atom-instruction">คลิกอะตอมเพื่อกระตุ้นนิวเคลียส</p>
+                        <p class="text-center atom-stage-indicator text-blue-500" id="atom-stage-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Energy Meter Atom -->
+            <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-3xl p-8 md:p-12 shadow-xl mb-12">
+                <div class="flex items-center mb-6">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white text-2xl mr-4">
+                        <i class="fas fa-radiation"></i>
+                    </div>
+                    <h4 class="text-3xl font-bold">การสลายตัวของนิวเคลียส</h4>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <p class="text-lg leading-relaxed">
+                            นิวเคลียสที่<strong>ไม่เสถียร</strong>จะสะสมพลังงานส่วนเกินจนถึงจุดวิกฤต 
+                            แล้วปลดปล่อยออกมาเป็น<strong>รังสี</strong>ผ่านกระบวนการ<strong>สลายตัว (Radioactive Decay)</strong>
+                        </p>
+                        <div class="bg-red-50 p-6 rounded-xl border-l-4 border-red-500">
+                            <p class="text-red-800">
+                                <i class="fas fa-bolt mr-2"></i>
+                                <strong>ลองเอง:</strong> คลิกนิวเคลียสเพื่อเพิ่มพลังงาน 
+                                เมื่อพลังงานสูงเกินจุดวิกฤต นิวเคลียสจะสลายตัวอัตโนมัติ!
+                            </p>
+                        </div>
+                        <!-- Energy Bar -->
+                        <div class="mt-4">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-semibold text-gray-700">พลังงานนิวเคลียส</span>
+                                <span class="text-sm font-bold" id="energy-value">0 / 100</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-5 overflow-hidden">
+                                <div id="energy-bar" class="h-full rounded-full transition-all duration-300 bg-green-500" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>เสถียร</span>
+                                <span class="text-orange-500 font-bold">จุดวิกฤต (70)</span>
+                                <span class="text-red-500 font-bold">สลายตัว!</span>
+                            </div>
+                        </div>
+                        <!-- Status -->
+                        <p class="text-center text-sm font-semibold" id="energy-status">คลิกนิวเคลียสเพื่อเพิ่มพลังงาน</p>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <div class="flex flex-col items-center">
+                            <div id="energy-atom" class="atom-card" role="button" tabindex="0" aria-label="อะตอม Energy Meter คลิกเพื่อเพิ่มพลังงาน">
+                                <div class="nucleus" id="energy-nucleus">
+                                    <span class="nucleus-dot"></span>
+                                </div>
+                                <div class="orbit orbit-1">
+                                    <div class="electron"></div>
+                                </div>
+                                <div class="orbit orbit-2">
+                                    <div class="electron"></div>
+                                </div>
+                                <div class="orbit orbit-3">
+                                    <div class="electron"></div>
+                                </div>
+                            </div>
+                            <p class="text-center text-sm text-gray-600 mt-3" id="energy-instruction">คลิกเพื่อเพิ่มพลังงาน (+10)</p>
                         </div>
                     </div>
                 </div>
