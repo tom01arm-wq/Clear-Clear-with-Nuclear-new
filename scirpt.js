@@ -26,6 +26,8 @@ const quizData = [
 // ตัวแปรสถานะสำหรับติดตามความคืบหน้าของแบบทดสอบ
 let currentQuiz = 0;  // ดัชนีข้อสอบปัจจุบัน (0-19)
 let score = 0;        // คะแนนสะสมของผู้ทำแบบทดสอบ
+let quizShuffledOptions = [];  // ตัวเลือกที่สุ่มแล้ว
+let quizCorrectIndex = 0;      // ตำแหน่งคำตอบที่ถูกหลังสุ่ม
 
 // ฟังก์ชันสำหรับเปิด/ปิด accordion ในส่วนคำถามที่พบบ่อย
 // button = ปุ่มที่ถูกคลิก
@@ -224,13 +226,18 @@ function loadQuiz() {
         progressBar.style.width = `${progress}%`;  // ตั้งค่าความกว้างของ progress bar
     }
 
+    // สุ่มลำดับตัวเลือกและเก็บ index ของคำตอบที่ถูกต้อง
+    const optionsWithIndex = q.a.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+    quizShuffledOptions = shuffleArray(optionsWithIndex);
+    quizCorrectIndex = quizShuffledOptions.findIndex(opt => opt.originalIndex === q.correct);
+
     // สร้างปุ่มตัวเลือกคำตอบ
     const optionsDiv = document.getElementById('options');
     optionsDiv.innerHTML = '';               // ล้างปุ่มเก่าออกก่อน
     const labels = ['ก.', 'ข.', 'ค.', 'ง.']; // ป้ายกำกับตัวเลือก
-    q.a.forEach((opt, idx) => {              // วนลูปสร้างปุ่มทีละตัว
+    quizShuffledOptions.forEach((opt, idx) => {              // วนลูปสร้างปุ่มทีละตัว
         const btn = document.createElement('button');
-        btn.innerText = `${labels[idx]} ${opt}`;  // ตั้งข้อความในปุ่ม
+        btn.innerText = `${labels[idx]} ${opt.text}`;  // ตั้งข้อความในปุ่ม
         btn.className = "w-full py-3 px-6 text-left border-2 border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-500 transition font-medium";
         btn.onclick = () => checkAnswer(idx, btn);  // ผูกฟังก์ชันตรวจคำตอบ
         optionsDiv.appendChild(btn);          // เพิ่มปุ่มลงในคอนเทนเนอร์
@@ -241,8 +248,7 @@ function loadQuiz() {
 // idx = ดัชนีตัวเลือกที่ผู้ใช้เลือก, selectedBtn = ปุ่มที่ถูกคลิก
 function checkAnswer(idx, selectedBtn) {
     const q = quizData[currentQuiz];                // ข้อมูลข้อสอบปัจจุบัน
-    const correct = q.correct;                      // ดัชนีคำตอบที่ถูกต้อง
-    const isCorrect = idx === correct;              // ตรวจสอบว่าตอบถูกหรือไม่
+    const isCorrect = idx === quizCorrectIndex;     // ตรวจสอบว่าตอบถูกหรือไม่ (ใช้ index หลังสุ่ม)
     if (isCorrect) score++;                          // ถ้าถูก เพิ่มคะแนน
 
     // หาปุ่มทั้งหมดในข้อสอบนี้
@@ -253,7 +259,7 @@ function checkAnswer(idx, selectedBtn) {
     allBtns.forEach((btn, i) => {
         btn.disabled = true;           // ปิดการใช้งานปุ่มทั้งหมด
         btn.onclick = null;            // ลบ event listener
-        if (i === correct) {           // ปุ่มคำตอบที่ถูกต้อง
+        if (i === quizCorrectIndex) {  // ปุ่มคำตอบที่ถูกต้อง (ใช้ index หลังสุ่ม)
             btn.className = "w-full py-3 px-6 text-left border-2 rounded-xl font-medium border-green-500 bg-green-50 text-green-800";
             btn.innerHTML += ' <i class="fas fa-check text-green-600 ml-2"></i>';
         } else if (btn === selectedBtn && !isCorrect) {  // ปุ่มที่ผู้ใช้เลือกแต่ตอบผิด
@@ -278,7 +284,7 @@ function checkAnswer(idx, selectedBtn) {
                         ${isCorrect ? 'ถูกต้อง!' : 'ไม่ถูกต้อง'}
                     </p>
                     <p class="text-gray-700 mb-2">${q.explanation}</p>
-                    ${!isCorrect ? `<p class="text-sm text-gray-500 mt-2">คำตอบที่ถูกต้อง: ${q.a[correct]}</p>` : ''}
+                    ${!isCorrect ? `<p class="text-sm text-gray-500 mt-2">คำตอบที่ถูกต้อง: ${quizShuffledOptions[quizCorrectIndex].text}</p>` : ''}
                 </div>
             </div>
         `;
@@ -707,8 +713,20 @@ let mythGame = {
     score: 0,
     streak: 0,
     answered: false,
-    highScore: 0
+    highScore: 0,
+    shuffledOptions: [],
+    correctIndex: 0
 };
+
+// ฟังก์ชันสุ่มลำดับอาร์เรย์ (Fisher-Yates shuffle)
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
 
 // Initialize Myth Buster Game
 function initMythBusterGame() {
@@ -761,6 +779,11 @@ function renderMythLevel() {
     const level = mythBusterData[mythGame.currentLevel];
     const progress = ((mythGame.currentLevel + 1) / mythBusterData.length) * 100;
 
+    // สุ่มลำดับตัวเลือกและเก็บ index ของคำตอบที่ถูกต้อง
+    const optionsWithIndex = level.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+    mythGame.shuffledOptions = shuffleArray(optionsWithIndex);
+    mythGame.correctIndex = mythGame.shuffledOptions.findIndex(opt => opt.originalIndex === level.correct);
+
     gameContainer.innerHTML = `
         <div class="max-w-2xl mx-auto">
             <!-- Progress Bar -->
@@ -794,12 +817,12 @@ function renderMythLevel() {
 
             <!-- Options -->
             <div class="grid gap-3" id="myth-options">
-                ${level.options.map((option, index) => `
+                ${mythGame.shuffledOptions.map((option, index) => `
                     <button onclick="answerMythQuestion(${index})" 
                             class="option-btn bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-blue-400 hover:bg-blue-50 transition-all"
                             data-index="${index}">
                         <span class="font-bold text-blue-600 mr-3">${String.fromCharCode(65 + index)}.</span>
-                        <span class="text-gray-700">${option}</span>
+                        <span class="text-gray-700">${option.text}</span>
                     </button>
                 `).join('')}
             </div>
@@ -816,14 +839,14 @@ function answerMythQuestion(selectedIndex) {
     mythGame.answered = true;
 
     const level = mythBusterData[mythGame.currentLevel];
-    const isCorrect = selectedIndex === level.correct;
+    const isCorrect = selectedIndex === mythGame.correctIndex;
     const options = document.querySelectorAll('.option-btn');
     const feedbackDiv = document.getElementById('myth-feedback');
 
     // Highlight correct and wrong answers
     options.forEach((btn, index) => {
         btn.disabled = true;
-        if (index === level.correct) {
+        if (index === mythGame.correctIndex) {
             btn.classList.add('bg-green-100', 'border-green-500');
             btn.innerHTML += ' <i class="fas fa-check text-green-600 ml-2"></i>';
         } else if (index === selectedIndex && !isCorrect) {
