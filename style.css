@@ -1,5 +1,35 @@
 .scroll-smooth { scroll-behavior: smooth; }
-.gradient-bg { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); }
+
+/* Modern Color Palette - Soft Professional Theme */
+.gradient-bg { 
+    background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 50%, #0891b2 100%); 
+}
+
+.gradient-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0d9488 100%);
+}
+
+.gradient-myths {
+    background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 50%, #fefce8 100%);
+}
+
+.gradient-basics {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+}
+
+.gradient-daily {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #f0fdf4 100%);
+}
+
+.gradient-concerns {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%);
+}
+
+/* Text Colors */
+.text-primary { color: #1e3a8a; }
+.text-secondary { color: #0d9488; }
+.text-accent { color: #ea580c; }
+.text-slate-dark { color: #1e293b; }
 
 .atom-card {
     position: relative;
@@ -360,4 +390,38 @@
     0% { opacity: 1; }
     80% { opacity: 0.6; }
     100% { opacity: 0; }
+}
+
+/* Myth Card 3D Flip Styles */
+.perspective {
+    perspective: 1000px;
+}
+
+.myth-card {
+    perspective: 1000px;
+}
+
+.myth-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.myth-card.flipped .myth-card-inner {
+    transform: rotateY(180deg);
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
 }
