@@ -291,11 +291,11 @@ function checkAnswer(idx, selectedBtn) {
         optionsDiv.parentElement.appendChild(feedbackDiv);
     }
 
-    // รอ 2.5 วินาทีแล้วข้ามไปข้อถัดไป
+    // รอ 1.5 วินาทีแล้วข้ามไปข้อถัดไป
     setTimeout(() => {
         currentQuiz++;  // เพิ่มดัชนีข้อสอบ
         if (currentQuiz < quizData.length) {  // ยังมีข้อสอบอยู่
-            loadQuiz();  // โหลดข้อถัดไป
+            loadQuiz();  // โหลดข้อถัดไป (จะล้างคำอธิบายเก่าออกโดยอัตโนมัติ)
         } else {       // ทำแบบทดสอบเสร็จสิ้น
             // คำนวณเปอร์เซ็นต์คะแนน
             const percent = Math.round((score / quizData.length) * 100);
@@ -313,7 +313,7 @@ function checkAnswer(idx, selectedBtn) {
                 </div>
             `;
         }
-    }, 2500);  // หน่วงเวลา 2.5 วินาที เพื่อให้อ่านคำอธิบาย
+    }, 1500);  // หน่วงเวลา 1.5 วินาที เพื่อให้อ่านคำอธิบาย
 }
 
 // ฟังก์ชันสำหรับแสดง/ซ่อนรูปภาพ
@@ -982,10 +982,573 @@ function showMythResults() {
     `;
 }
 
+// Fake News Detector Data
+const fakeNewsPool = [
+    {
+        id: "fake-1",
+        difficulty: "easy",
+        isCredible: false,
+        title: "ดื่มน้ำผสมไอโอดีนหนึ่งหยด ป้องกันรังสีได้ 100% ใน 1 ชั่วโมง",
+        source: "Nuclear-Health-Flash.blog",
+        author: "ทีมข่าวสุขภาพเร่งด่วน",
+        publishDate: "12/11/2777",
+        lead: "โพสต์นี้อ้างว่าไม่จำเป็นต้องพบแพทย์ เพราะสูตรดังกล่าวป้องกันรังสีได้ทันที",
+        body: "บทความระบุว่ามีผลทดลองกับประชากร [[spot:sample-size|5 คน]] และสรุปว่า [[spot:absolute-claim|ป้องกันได้ 100% ทันที]] โดยไม่ต้องใช้มาตรการอื่น อีกทั้งยังยืนยันว่าได้รับการรับรองจาก [[spot:unknown-agency|องค์กรวิจัยลับระดับโลก]] พร้อมอ้างว่าเผยแพร่ตั้งแต่ [[spot:future-date|ปี 2777]] และแนะนำให้แชร์ต่อทันที",
+        hotspots: [
+            { id: "sample-size", reason: "ขนาดกลุ่มทดลองเล็กเกินไปและไม่เพียงพอทางสถิติ", isSuspicious: true },
+            { id: "absolute-claim", reason: "กล่าวอ้างผลลัพธ์แบบ 100% โดยไม่มีเงื่อนไขรองรับ", isSuspicious: true },
+            { id: "unknown-agency", reason: "อ้างองค์กรไม่ระบุชื่อ ตรวจสอบแหล่งที่มาไม่ได้", isSuspicious: true },
+            { id: "future-date", reason: "ระบุปีเผยแพร่ในอนาคตผิดปกติ", isSuspicious: true }
+        ],
+        explanation: "ข่าวนี้ไม่น่าเชื่อถือ เพราะใช้วันที่อนาคต อ้างผลลัพธ์เกินจริง และอ้างแหล่งข้อมูลที่ตรวจสอบไม่ได้"
+    },
+    {
+        id: "fake-2",
+        difficulty: "easy",
+        isCredible: false,
+        title: "โรงไฟฟ้านิวเคลียร์ใหม่ปล่อยควันกัมมันตรังสีทำให้พืชในเมืองเปลี่ยนสี",
+        source: "ข่าวจริงทันใจ 24x7",
+        author: "นักข่าวอิสระไม่เปิดเผยชื่อ",
+        publishDate: "03/08/2026",
+        lead: "ในโพสต์ระบุว่าควันสีขาวจากปล่องคือรังสีบริสุทธิ์ที่อันตรายทันที",
+        body: "เนื้อหากล่าวว่าโรงไฟฟ้าปล่อย [[spot:steam-claim|ควันกัมมันตรังสีทุกวัน]] โดยไม่มีระบบกรอง และยืนยันว่าประชาชนในพื้นที่ [[spot:no-evidence-count|ป่วยพร้อมกัน 70,000 คนในวันเดียว]] โดยไม่แนบข้อมูลโรงพยาบาล อีกทั้งยังใช้ภาพจากเหตุการณ์ [[spot:old-photo|ภัยพิบัติเมื่อ 20 ปีก่อน]] และอ้างคำพูดจาก [[spot:unknown-witness|พยานนิรนาม]] มาเป็นหลักฐานประกอบ",
+        hotspots: [
+            { id: "steam-claim", reason: "เหมารวมไอน้ำเป็นรังสีโดยไม่มีข้อมูลเชิงเทคนิคสนับสนุน", isSuspicious: true },
+            { id: "no-evidence-count", reason: "อ้างตัวเลขผู้ป่วยจำนวนมากแต่ไม่มีแหล่งข้อมูลรองรับ", isSuspicious: true },
+            { id: "old-photo", reason: "ใช้ภาพเก่าต่างบริบทมาสร้างความเข้าใจผิด", isSuspicious: true },
+            { id: "unknown-witness", reason: "อ้างพยานนิรนามโดยไม่มีหลักฐานยืนยันตัวตน", isSuspicious: true }
+        ],
+        explanation: "ข่าวนี้บิดเบือนบริบทและใช้ภาพเก่าเพื่อชี้นำอารมณ์ มากกว่าการให้ข้อมูลตรวจสอบได้"
+    },
+    {
+        id: "fake-3",
+        difficulty: "medium",
+        isCredible: false,
+        title: "นักวิทยาศาสตร์ยืนยัน: ใส่กำไลแม่เหล็กกันรังสีได้ตลอดชีวิต",
+        source: "super-protection-now.net",
+        author: "ฝ่ายวิจัยผลิตภัณฑ์",
+        publishDate: "19/01/2026",
+        lead: "บทความชี้ว่าผลิตภัณฑ์นี้แทนการตรวจสุขภาพรังสีได้ทั้งหมด",
+        body: "หน้าเว็บใส่คำว่า [[spot:no-reference|อ้างอิงงานวิจัยนานาชาติ]] แต่ไม่ให้ลิงก์หรือรายละเอียดผู้วิจัย มีข้อความโฆษณาว่า [[spot:too-good|คืนเงิน 500% หากยังได้รับรังสี]] และกล่าวว่า [[spot:replace-medical|ไม่จำเป็นต้องพบแพทย์อีกต่อไป]] พร้อมใส่รีวิวที่ไม่ระบุที่มาว่า [[spot:anonymous-review|ผู้ใช้ทุกคนพอใจ 100%]]",
+        hotspots: [
+            { id: "no-reference", reason: "กล่าวถึงงานวิจัยแต่ไม่ให้ข้อมูลอ้างอิงจริง", isSuspicious: true },
+            { id: "too-good", reason: "คำกล่าวเกินจริงและขัดกับหลักวิทยาศาสตร์", isSuspicious: true },
+            { id: "replace-medical", reason: "ชักชวนให้แทนที่การดูแลจากแพทย์โดยไม่มีหลักฐานรองรับ", isSuspicious: true },
+            { id: "anonymous-review", reason: "รีวิวอ้างผลลัพธ์สมบูรณ์แบบโดยไม่ระบุที่มา", isSuspicious: true }
+        ],
+        explanation: "ข่าวนี้เป็นเชิงโฆษณาเกินจริงและไม่มีหลักฐานวิชาการตรวจสอบย้อนกลับ"
+    },
+    {
+        id: "real-1",
+        difficulty: "easy",
+        isCredible: true,
+        title: "โรงพยาบาลจังหวัดเปิดบริการ SPECT/CT สำหรับผู้ป่วยโรคต่อมไทรอยด์",
+        source: "ศูนย์ข่าวโรงพยาบาลรัฐ",
+        author: "กองสื่อสารองค์กร",
+        publishDate: "21/02/2026",
+        lead: "หน่วยงานระบุเวลาบริการ ขั้นตอนการนัด และเอกสารอ้างอิงเวชปฏิบัติ",
+        body: "ประกาศระบุว่าการตรวจใช้สารรังสีปริมาณต่ำตามแนวทางเวชปฏิบัติ และมีการอ้างถึง [[decoy:radiation-word|คำว่า 'รังสี']] ซึ่งอาจทำให้ผู้อ่านกังวล แต่ข้อมูลทั้งหมดมีเอกสารและขั้นตอนชัดเจน",
+        hotspots: [
+            { id: "radiation-word", reason: "คำว่ารังสีเพียงอย่างเดียวไม่ใช่หลักฐานว่าข่าวปลอม", isSuspicious: false }
+        ],
+        explanation: "ข่าวนี้น่าเชื่อถือ เพราะมีแหล่งหน่วยงานชัดเจน มีรายละเอียดการให้บริการ และไม่มีข้ออ้างเกินจริง"
+    },
+    {
+        id: "real-2",
+        difficulty: "medium",
+        isCredible: true,
+        title: "รายงานความปลอดภัยโรงไฟฟ้ารายไตรมาสเผยค่ารังสีต่ำกว่าเกณฑ์กำกับดูแล",
+        source: "สำนักงานกำกับดูแลพลังงาน",
+        author: "ฝ่ายติดตามความปลอดภัย",
+        publishDate: "30/03/2026",
+        lead: "รายงานเผยตัวเลขตรวจวัดรายสัปดาห์และวิธีการสอบเทียบเครื่องมือ",
+        body: "เอกสารระบุช่วงค่าการตรวจวัดพร้อมตารางเปิดเผยข้อมูล และอ้างอิงคู่มือกำกับดูแลฉบับล่าสุด ผู้เขียนยังอธิบายความต่างระหว่าง [[decoy:low-value|ค่าต่ำกว่าเกณฑ์]] กับค่าศูนย์อย่างชัดเจน",
+        hotspots: [
+            { id: "low-value", reason: "ค่าต่ำกว่าเกณฑ์ไม่ใช่สัญญาณข่าวปลอม", isSuspicious: false }
+        ],
+        explanation: "ข่าวนี้น่าเชื่อถือเพราะมีตัวเลขตรวจวัด วิธีการวัด และเอกสารกำกับดูแลตรวจสอบได้"
+    },
+    {
+        id: "real-3",
+        difficulty: "hard",
+        isCredible: true,
+        title: "มหาวิทยาลัยเผยแพร่ฐานข้อมูลเปิดเรื่องปริมาณรังสีพื้นหลังประจำจังหวัด",
+        source: "ศูนย์ข้อมูลวิทยาศาสตร์เปิด",
+        author: "คณะฟิสิกส์ประยุกต์",
+        publishDate: "07/04/2026",
+        lead: "ผู้ใช้งานดาวน์โหลดข้อมูลดิบได้ พร้อมคู่มือแปลผลเชิงสถิติ",
+        body: "ในบทความมีตารางสรุปค่าเฉลี่ยและส่วนเบี่ยงเบนมาตรฐาน อธิบายความคลาดเคลื่อนเครื่องมือ และย้ำว่า [[decoy:uncertainty|มีค่าความไม่แน่นอน]] เป็นเรื่องปกติของการวัด",
+        hotspots: [
+            { id: "uncertainty", reason: "การระบุค่าความไม่แน่นอนเป็นแนวปฏิบัติทางวิทยาศาสตร์ที่ถูกต้อง", isSuspicious: false }
+        ],
+        explanation: "ข่าวนี้น่าเชื่อถือ เพราะเปิดข้อมูลดิบ วิธีวัด และข้อจำกัดอย่างโปร่งใส"
+    },
+    {
+        id: "fake-4",
+        difficulty: "hard",
+        isCredible: false,
+        title: "แอปมือถือสแกนรังสีในร่างกายได้แม่นยำเท่าเครื่องโรงพยาบาล",
+        source: "Future Miracle Tech",
+        author: "แอดมินเพจ",
+        publishDate: "11/05/2026",
+        lead: "โฆษณาระบุว่าไม่ต้องเข้ารับการตรวจทางการแพทย์อีกต่อไป",
+        body: "บทความอ้างว่าสมาร์ตโฟนทั่วไปตรวจรังสีได้ละเอียดกว่าห้องแล็บ และมีผู้ใช้รีวิวว่า [[spot:no-method|ใช้งานแล้วแม่นยำ 100% โดยไม่ต้องสอบเทียบ]] พร้อมข้อความว่า [[spot:replace-clinic|ไม่ต้องไปโรงพยาบาลอีกแล้ว]] และกระตุ้นให้ซื้อทันทีด้วยโปรโมชัน [[spot:urgent-sale|หมดเขตใน 10 นาทีทั่วประเทศ]]",
+        hotspots: [
+            { id: "no-method", reason: "อ้างความแม่นยำสูงสุดโดยไม่มีวิธีวัดและการสอบเทียบรองรับ", isSuspicious: true },
+            { id: "replace-clinic", reason: "ชี้นำให้เลี่ยงการตรวจทางการแพทย์ที่จำเป็น", isSuspicious: true },
+            { id: "urgent-sale", reason: "ใช้แรงกดดันด้านเวลาเพื่อเร่งตัดสินใจแทนข้อมูลวิทยาศาสตร์", isSuspicious: true }
+        ],
+        explanation: "ข่าวนี้ไม่น่าเชื่อถือ เพราะอวดอ้างความแม่นยำเกินจริงและไม่มีรายละเอียดวิธีการทดสอบ"
+    },
+    {
+        id: "fake-5",
+        difficulty: "medium",
+        isCredible: false,
+        title: "รัฐบาลต่างประเทศประกาศยกเลิกการใช้รังสีรักษามะเร็งทั่วโลกแล้ว",
+        source: "Global Shock Update",
+        author: "ทีมข่าวพลเมือง",
+        publishDate: "05/06/2026",
+        lead: "ข่าวอ้างคำสั่งระดับโลกทันทีโดยไม่มีเอกสารทางการ",
+        body: "เนื้อหากล่าวถึง [[spot:global-order|คำสั่งกลางทั่วโลก]] แต่ไม่ระบุประเทศหรือเอกสารประกาศ อ้างว่าวิธีรักษาทางเลือกใหม่ทำให้ [[spot:instant-cure|หายขาด 100% ภายใน 24 ชั่วโมง]] และบอกว่าได้รับการยืนยันจาก [[spot:no-organization|คณะกรรมการสากล]] โดยไม่ระบุชื่อจริง",
+        hotspots: [
+            { id: "global-order", reason: "อ้างคำสั่งใหญ่แต่ไม่ระบุแหล่งเอกสารทางการ", isSuspicious: true },
+            { id: "instant-cure", reason: "อ้างผลการรักษาเกินจริงผิดปกติ", isSuspicious: true },
+            { id: "no-organization", reason: "อ้างหน่วยงานกำกับดูแลแบบคลุมเครือ ตรวจสอบไม่ได้", isSuspicious: true }
+        ],
+        explanation: "ข่าวนี้ไม่น่าเชื่อถือ เพราะใช้คำกล่าวใหญ่ระดับโลกโดยไม่มีหลักฐาน และมีคำอ้างรักษาเกินจริง"
+    },
+    {
+        id: "real-4",
+        difficulty: "hard",
+        isCredible: true,
+        title: "คู่มือสื่อสารความเสี่ยงรังสีฉบับประชาชนเผยแพร่เวอร์ชันปรับปรุง",
+        source: "สถาบันความปลอดภัยทางรังสี",
+        author: "คณะทำงานวิชาการ",
+        publishDate: "15/05/2026",
+        lead: "มีฉบับ PDF ดาวน์โหลดฟรี พร้อมส่วนถาม-ตอบและคำศัพท์",
+        body: "เอกสารระบุว่าใช้ตัวอย่างสถานการณ์จริงและอธิบายทั้งประโยชน์/ความเสี่ยงอย่างสมดุล รวมถึงย้ำว่าการประเมินต้องดู [[decoy:context-word|บริบทเฉพาะกรณี]] ไม่ใช่ตัดสินจากคำเดียว",
+        hotspots: [
+            { id: "context-word", reason: "การย้ำเรื่องบริบทเป็นลักษณะข้อมูลวิชาการที่น่าเชื่อถือ", isSuspicious: false }
+        ],
+        explanation: "ข่าวนี้น่าเชื่อถือ เพราะมีเอกสารประกอบ รายละเอียดผู้จัดทำ และแนวทางสื่อสารที่ตรวจสอบได้"
+    },
+    {
+        id: "fake-6",
+        difficulty: "hard",
+        isCredible: false,
+        title: "ข่าวด่วน: เมืองทั้งเมืองหยุดใช้ไฟหลังรับรังสีจากเสาไฟถนน",
+        source: "Breaking Viral Max",
+        author: "ทีมคอนเทนต์ไวรัล",
+        publishDate: "09/09/2026",
+        lead: "บทความเล่าว่าประชาชนล้มป่วยทันทีหลายแสนคนแต่ไม่มีรายงานโรงพยาบาล",
+        body: "ข้อความใช้สถิติไม่สมเหตุผลว่า [[spot:huge-number|ผู้ป่วย 900,000 คนภายใน 2 ชั่วโมง]] โดยไม่ระบุพื้นที่ แนบคำพูดจาก [[spot:anonymous|ผู้เชี่ยวชาญนิรนาม]] เพียงรายเดียว และอ้างว่ามีคลิปยืนยันแต่เป็น [[spot:no-proof-video|วิดีโอที่ไม่มีวันเวลาและสถานที่ชัดเจน]]",
+        hotspots: [
+            { id: "huge-number", reason: "ตัวเลขผู้ป่วยสูงผิดปกติและขาดข้อมูลอ้างอิง", isSuspicious: true },
+            { id: "anonymous", reason: "ใช้แหล่งข้อมูลนิรนามเป็นหลักโดยไม่มีหลักฐานรองรับ", isSuspicious: true },
+            { id: "no-proof-video", reason: "อ้างวิดีโอหลักฐานแต่ไม่มีข้อมูลตรวจสอบแหล่งที่มา", isSuspicious: true }
+        ],
+        explanation: "ข่าวนี้ไม่น่าเชื่อถือ เพราะตัวเลขและแหล่งข้อมูลไม่สอดคล้องกับการรายงานที่ตรวจสอบได้"
+    }
+];
+
+const fakeNewsGame = {
+    totalRounds: 6,
+    currentRound: 0,
+    score: 0,
+    answered: false,
+    roundSet: [],
+    selectedHotspots: new Set(),
+    startTime: 0,
+    roundStartTime: 0,
+    timerInterval: null,
+    stats: {
+        correctVerdicts: 0,
+        foundSuspicious: 0,
+        missedSuspicious: 0,
+        wrongClicks: 0
+    }
+};
+
+function initFakeNewsGame() {
+    const gameContainer = document.getElementById('fake-news-game-container');
+    if (!gameContainer) return;
+    showFakeNewsStartScreen();
+}
+
+function showFakeNewsStartScreen() {
+    const gameContainer = document.getElementById('fake-news-game-container');
+    if (!gameContainer) return;
+
+    gameContainer.innerHTML = `
+        <div class="text-center py-10">
+            <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <i class="fas fa-magnifying-glass-chart text-4xl text-white"></i>
+            </div>
+            <h4 class="text-3xl font-bold text-slate-800 mb-3">Fake News Detector</h4>
+            <p class="text-gray-600 mb-2 max-w-3xl mx-auto">อ่านหน้าเว็บข่าวจำลอง แล้วคลิกจุดที่น่าสงสัยก่อนตัดสินว่า <strong>น่าเชื่อถือ</strong> หรือ <strong>ไม่น่าเชื่อถือ</strong></p>
+            <p class="text-sm text-emerald-700 font-medium mb-8">6 ด่านแบบสุ่ม | ข่าวจริงและข่าวปลอมปนกัน | มีโบนัสเวลา</p>
+
+            <div class="max-w-2xl mx-auto bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-left mb-8">
+                <h5 class="font-bold text-emerald-800 mb-3"><i class="fas fa-list-check mr-2"></i>วิธีเล่น</h5>
+                <ul class="space-y-2 text-sm text-slate-700">
+                    <li>1) คลิกข้อความที่คิดว่าเป็นหลักฐานน่าสงสัย</li>
+                    <li>2) กดปุ่มตัดสินข่าวว่า น่าเชื่อถือ หรือ ไม่น่าเชื่อถือ</li>
+                    <li>3) เจอหลักฐานถูกได้คะแนนเพิ่ม คลิกผิดหรือสรุปผิดโดนหักคะแนน</li>
+                    <li>4) ตอบเร็วขึ้นได้โบนัสเวลาเพิ่ม</li>
+                </ul>
+            </div>
+
+            <button onclick="startFakeNewsGame()" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:shadow-lg transform hover:scale-105 transition-all">
+                <i class="fas fa-play mr-2"></i>เริ่มเกมตรวจข่าว
+            </button>
+        </div>
+    `;
+}
+
+function startFakeNewsGame() {
+    fakeNewsGame.currentRound = 0;
+    fakeNewsGame.score = 0;
+    fakeNewsGame.answered = false;
+    fakeNewsGame.selectedHotspots = new Set();
+    fakeNewsGame.stats = {
+        correctVerdicts: 0,
+        foundSuspicious: 0,
+        missedSuspicious: 0,
+        wrongClicks: 0
+    };
+
+    const shuffledPool = shuffleArray(fakeNewsPool);
+    fakeNewsGame.roundSet = shuffledPool.slice(0, fakeNewsGame.totalRounds);
+    fakeNewsGame.startTime = Date.now();
+    fakeNewsGame.roundStartTime = Date.now();
+
+    if (fakeNewsGame.timerInterval) {
+        clearInterval(fakeNewsGame.timerInterval);
+    }
+    fakeNewsGame.timerInterval = setInterval(updateFakeNewsTimerUI, 1000);
+
+    renderFakeNewsRound();
+}
+
+function updateFakeNewsTimerUI() {
+    const timerEl = document.getElementById('fake-news-total-timer');
+    if (!timerEl || !fakeNewsGame.startTime) return;
+    timerEl.textContent = formatElapsedSeconds(Math.floor((Date.now() - fakeNewsGame.startTime) / 1000));
+}
+
+function formatElapsedSeconds(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+function renderFakeNewsRound() {
+    const gameContainer = document.getElementById('fake-news-game-container');
+    if (!gameContainer) return;
+
+    const roundData = fakeNewsGame.roundSet[fakeNewsGame.currentRound];
+    if (!roundData) return;
+
+    fakeNewsGame.answered = false;
+    fakeNewsGame.selectedHotspots = new Set();
+    fakeNewsGame.roundStartTime = Date.now();
+
+    const progress = Math.round(((fakeNewsGame.currentRound + 1) / fakeNewsGame.totalRounds) * 100);
+    const bodyHtml = renderFakeNewsBody(roundData.body);
+    const suspiciousCount = roundData.hotspots.filter((spot) => spot.isSuspicious).length;
+
+    gameContainer.innerHTML = `
+        <div class="max-w-5xl mx-auto">
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-3 justify-between items-center mb-3">
+                    <div class="text-sm font-medium text-slate-600">ด่าน ${fakeNewsGame.currentRound + 1}/${fakeNewsGame.totalRounds}</div>
+                    <div class="flex gap-4 text-sm">
+                        <span class="font-bold text-emerald-700">คะแนน: ${fakeNewsGame.score}</span>
+                        <span class="font-medium text-slate-600">เวลารวม: <span id="fake-news-total-timer">${formatElapsedSeconds(Math.floor((Date.now() - fakeNewsGame.startTime) / 1000))}</span></span>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-500" style="width: ${progress}%"></div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-md mb-6">
+                <div class="flex flex-wrap justify-between items-start gap-3 mb-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-wide text-slate-500">เว็บไซต์ข่าวจำลอง</p>
+                        <h5 class="text-2xl font-bold text-slate-900 mt-1">${roundData.title}</h5>
+                    </div>
+                    <div class="text-right text-sm text-slate-600">
+                        <p><i class="fas fa-building mr-1"></i>${roundData.source}</p>
+                        <p><i class="fas fa-user mr-1"></i>${roundData.author}</p>
+                        <p><i class="fas fa-calendar mr-1"></i>${roundData.publishDate}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-4 mb-4">
+                    <p class="text-slate-700 leading-relaxed">${roundData.lead}</p>
+                </div>
+
+                <article class="bg-white border border-slate-200 rounded-xl p-5 leading-relaxed text-slate-800">
+                    ${bodyHtml}
+                </article>
+
+                <div class="mt-4 text-sm text-slate-600 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                    <i class="fas fa-hand-pointer mr-1 text-amber-600"></i>
+                    คลิกข้อความที่สงสัยได้หลายจุด แล้วค่อยกดตัดสินข่าว
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-3 mb-4">
+                <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
+                    <p class="text-xs text-green-700">จำนวนจุดน่าสงสัยจริง</p>
+                    <p class="text-2xl font-bold text-green-800">${suspiciousCount}</p>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+                    <p class="text-xs text-blue-700">จุดที่คุณเลือก</p>
+                    <p id="selected-count" class="text-2xl font-bold text-blue-800">0</p>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center">
+                    <p class="text-xs text-purple-700">เวลาในด่าน</p>
+                    <p id="round-timer" class="text-2xl font-bold text-purple-800">00:00</p>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-3">
+                <button onclick="submitFakeNewsVerdict(true)" class="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition-colors">
+                    <i class="fas fa-shield-check mr-2"></i>น่าเชื่อถือ
+                </button>
+                <button onclick="submitFakeNewsVerdict(false)" class="bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold transition-colors">
+                    <i class="fas fa-triangle-exclamation mr-2"></i>ไม่น่าเชื่อถือ
+                </button>
+            </div>
+
+            <div id="fake-news-feedback" class="hidden mt-5"></div>
+        </div>
+    `;
+
+    updateRoundTimer();
+}
+
+function updateRoundTimer() {
+    const timerEl = document.getElementById('round-timer');
+    if (!timerEl || fakeNewsGame.answered) return;
+    const elapsed = Math.floor((Date.now() - fakeNewsGame.roundStartTime) / 1000);
+    timerEl.textContent = formatElapsedSeconds(elapsed);
+    requestAnimationFrame(updateRoundTimer);
+}
+
+function renderFakeNewsBody(rawText) {
+    return rawText.replace(/\[\[(spot|decoy):([a-z0-9-]+)\|([^\]]+)\]\]/gi, (_, _type, id, label) => {
+        const uniformStyle = 'border-slate-300 text-slate-700 hover:bg-slate-100';
+        return `<button type="button" data-spot-id="${id}" onclick="toggleFakeNewsSpot('${id}')" class="inline-block border-2 border-dashed ${uniformStyle} rounded-md px-1.5 py-0.5 font-semibold transition-colors">${label}</button>`;
+    });
+}
+
+function toggleFakeNewsSpot(spotId) {
+    if (fakeNewsGame.answered) return;
+
+    if (fakeNewsGame.selectedHotspots.has(spotId)) {
+        fakeNewsGame.selectedHotspots.delete(spotId);
+    } else {
+        fakeNewsGame.selectedHotspots.add(spotId);
+    }
+
+    const selectedCount = document.getElementById('selected-count');
+    if (selectedCount) {
+        selectedCount.textContent = fakeNewsGame.selectedHotspots.size;
+    }
+
+    const allTargets = document.querySelectorAll(`[data-spot-id="${spotId}"]`);
+    allTargets.forEach((target) => {
+        target.classList.toggle('ring-2');
+        target.classList.toggle('ring-offset-1');
+        target.classList.toggle('ring-amber-400');
+        target.classList.toggle('bg-amber-100');
+    });
+}
+
+function submitFakeNewsVerdict(userThinksCredible) {
+    if (fakeNewsGame.answered) return;
+    fakeNewsGame.answered = true;
+
+    const roundData = fakeNewsGame.roundSet[fakeNewsGame.currentRound];
+    const feedbackDiv = document.getElementById('fake-news-feedback');
+    if (!roundData || !feedbackDiv) return;
+
+    const hotspotMap = {};
+    roundData.hotspots.forEach((spot) => {
+        hotspotMap[spot.id] = spot;
+    });
+
+    const selected = [...fakeNewsGame.selectedHotspots];
+    const suspiciousIds = roundData.hotspots.filter((spot) => spot.isSuspicious).map((spot) => spot.id);
+    const decoyIds = roundData.hotspots.filter((spot) => !spot.isSuspicious).map((spot) => spot.id);
+
+    const foundSuspicious = selected.filter((id) => suspiciousIds.includes(id));
+    const wrongClicks = selected.filter((id) => decoyIds.includes(id));
+    const missedSuspicious = suspiciousIds.filter((id) => !selected.includes(id));
+
+    const verdictCorrect = userThinksCredible === roundData.isCredible;
+    const roundSeconds = Math.floor((Date.now() - fakeNewsGame.roundStartTime) / 1000);
+
+    const verdictScore = verdictCorrect ? 120 : -90;
+    const foundScore = foundSuspicious.length * 35;
+    const missedPenalty = missedSuspicious.length * 15;
+    const wrongPenalty = wrongClicks.length * 20;
+    const timeBonus = Math.max(0, 45 - (roundSeconds * 2));
+    const roundScore = verdictScore + foundScore - missedPenalty - wrongPenalty + timeBonus;
+
+    fakeNewsGame.score += roundScore;
+    fakeNewsGame.stats.correctVerdicts += verdictCorrect ? 1 : 0;
+    fakeNewsGame.stats.foundSuspicious += foundSuspicious.length;
+    fakeNewsGame.stats.missedSuspicious += missedSuspicious.length;
+    fakeNewsGame.stats.wrongClicks += wrongClicks.length;
+
+    const verdictText = roundData.isCredible ? "น่าเชื่อถือ" : "ไม่น่าเชื่อถือ";
+    const resultClass = verdictCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200";
+    const resultTitleClass = verdictCorrect ? "text-green-800" : "text-red-800";
+
+    const detailsRows = [
+        `คะแนนตัดสินข่าว: ${verdictScore >= 0 ? '+' : ''}${verdictScore}`,
+        `คะแนนจากจุดถูก: +${foundScore}`,
+        `หักจากจุดที่พลาด: -${missedPenalty}`,
+        `หักจากคลิกผิดจุด: -${wrongPenalty}`,
+        `โบนัสเวลา (${formatElapsedSeconds(roundSeconds)}): +${timeBonus}`
+    ];
+
+    const missedDetail = missedSuspicious.length
+        ? missedSuspicious.map((id) => `<li>• ${hotspotMap[id].reason}</li>`).join('')
+        : '<li>• ไม่พลาดจุดน่าสงสัย</li>';
+
+    const wrongDetail = wrongClicks.length
+        ? wrongClicks.map((id) => `<li>• ${hotspotMap[id].reason}</li>`).join('')
+        : '<li>• ไม่มีการคลิกผิดจุด</li>';
+
+    feedbackDiv.innerHTML = `
+        <div class="${resultClass} rounded-xl p-5 border-2">
+            <p class="font-bold text-lg ${resultTitleClass} mb-2">
+                ${verdictCorrect ? 'ตัดสินถูกต้อง' : 'ตัดสินยังไม่ถูก'}
+            </p>
+            <p class="text-slate-700 mb-1">คำตอบที่ถูกต้องของข่าวนี้: <strong>${verdictText}</strong></p>
+            <p class="text-slate-600 mb-4">${roundData.explanation}</p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white/80 rounded-lg p-3">
+                    <p class="font-semibold text-slate-800 mb-2">สรุปคะแนนด่านนี้</p>
+                    <ul class="text-sm text-slate-700 space-y-1">
+                        ${detailsRows.map((row) => `<li>• ${row}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="bg-white/80 rounded-lg p-3">
+                    <p class="font-semibold text-slate-800 mb-2">สิ่งที่ควรทบทวน</p>
+                    <ul class="text-sm text-slate-700 space-y-1">${missedDetail}</ul>
+                    <p class="font-semibold text-slate-800 mt-3 mb-2">จุดที่คลิกผิด</p>
+                    <ul class="text-sm text-slate-700 space-y-1">${wrongDetail}</ul>
+                </div>
+            </div>
+
+            <div class="text-right">
+                <button onclick="nextFakeNewsRound()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-bold transition-colors">
+                    ${fakeNewsGame.currentRound < fakeNewsGame.totalRounds - 1 ? 'ด่านต่อไป' : 'สรุปผลเกม'}
+                </button>
+            </div>
+        </div>
+    `;
+    feedbackDiv.classList.remove('hidden');
+
+    disableFakeNewsButtons();
+}
+
+function disableFakeNewsButtons() {
+    const decisionButtons = document.querySelectorAll('#fake-news-game-container button');
+    decisionButtons.forEach((btn) => {
+        if (btn.innerText.includes('น่าเชื่อถือ') || btn.innerText.includes('ไม่น่าเชื่อถือ')) {
+            btn.disabled = true;
+            btn.classList.add('opacity-60', 'cursor-not-allowed');
+        }
+    });
+}
+
+function nextFakeNewsRound() {
+    fakeNewsGame.currentRound++;
+    if (fakeNewsGame.currentRound >= fakeNewsGame.totalRounds) {
+        showFakeNewsResults();
+    } else {
+        renderFakeNewsRound();
+    }
+}
+
+function showFakeNewsResults() {
+    const gameContainer = document.getElementById('fake-news-game-container');
+    if (!gameContainer) return;
+
+    if (fakeNewsGame.timerInterval) {
+        clearInterval(fakeNewsGame.timerInterval);
+        fakeNewsGame.timerInterval = null;
+    }
+
+    const totalSeconds = Math.floor((Date.now() - fakeNewsGame.startTime) / 1000);
+    const maxSuspicious = fakeNewsGame.roundSet.reduce((sum, round) => {
+        return sum + round.hotspots.filter((spot) => spot.isSuspicious).length;
+    }, 0);
+    const evidenceAccuracy = maxSuspicious === 0
+        ? 100
+        : Math.round((fakeNewsGame.stats.foundSuspicious / maxSuspicious) * 100);
+
+    gameContainer.innerHTML = `
+        <div class="text-center py-10">
+            <div class="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <i class="fas fa-award text-5xl text-white"></i>
+            </div>
+            <h4 class="text-3xl font-bold text-slate-800 mb-2">สรุปผล Fake News Detector</h4>
+            <p class="text-slate-600 mb-8">คุณเล่นครบ ${fakeNewsGame.totalRounds} ด่านแล้ว</p>
+
+            <div class="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-8">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                    <p class="text-sm text-emerald-700">คะแนนรวม</p>
+                    <p class="text-4xl font-bold text-emerald-800">${fakeNewsGame.score}</p>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <p class="text-sm text-blue-700">เวลารวม</p>
+                    <p class="text-4xl font-bold text-blue-800">${formatElapsedSeconds(totalSeconds)}</p>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                    <p class="text-sm text-purple-700">ตัดสินข่าวถูก</p>
+                    <p class="text-4xl font-bold text-purple-800">${fakeNewsGame.stats.correctVerdicts}/${fakeNewsGame.totalRounds}</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <p class="text-sm text-amber-700">ความแม่นยำการหาหลักฐาน</p>
+                    <p class="text-4xl font-bold text-amber-800">${evidenceAccuracy}%</p>
+                </div>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-slate-50 border border-slate-200 rounded-xl p-4 text-left mb-8">
+                <p class="font-semibold text-slate-800 mb-2">ภาพรวมการเล่น</p>
+                <ul class="text-sm text-slate-700 space-y-1">
+                    <li>• พบหลักฐานน่าสงสัย: ${fakeNewsGame.stats.foundSuspicious} จุด</li>
+                    <li>• พลาดหลักฐานน่าสงสัย: ${fakeNewsGame.stats.missedSuspicious} จุด</li>
+                    <li>• คลิกผิดจุด: ${fakeNewsGame.stats.wrongClicks} จุด</li>
+                </ul>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="startFakeNewsGame()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-full font-bold transition-colors">
+                    <i class="fas fa-rotate-right mr-2"></i>เล่นใหม่
+                </button>
+                <button onclick="showFakeNewsStartScreen()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-full font-bold transition-colors">
+                    <i class="fas fa-house mr-2"></i>หน้าหลักเกม
+                </button>
+            </div>
+        </div>
+    `;
+}
+
 // กำหนด event listener สำหรับเริ่มทำงานเมื่อโหลดหน้าเว็บเสร็จ
 document.addEventListener('DOMContentLoaded', () => {
     loadQuiz();           // เริ่มแบบทดสอบ
     setupInteractiveAtom(); // ตั้งค่าอะตอมแบบโต้ตอบ
     setupEnergyAtom();    // ตั้งค่าอะตอม Energy Meter
     initMythBusterGame(); // เริ่มเกม Myth Buster ใหม่
+    initFakeNewsGame();   // เริ่มเกม Fake News Detector
 });
