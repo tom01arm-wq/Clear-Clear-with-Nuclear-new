@@ -1061,9 +1061,7 @@
             </div>
 
             <div class="bg-white text-slate-900 rounded-3xl shadow-2xl overflow-hidden">
-
-                <!-- Intro State -->
-                <div id="fn-intro-state" class="p-8 md:p-12 text-center">
+                <div id="fake-news-game-container" class="p-4">
                     <i class="fas fa-shield-alt text-6xl text-indigo-500 mb-6 block"></i>
                     <h3 class="text-3xl font-extrabold text-slate-800 mb-4">ภารกิจตรวจสอบข่าว 6 ด่าน</h3>
                     <p class="text-slate-600 mb-6 max-w-xl mx-auto">คุณจะได้อ่านข่าวจำลอง 6 ฉบับ (สุ่มลำดับ) ทั้งข่าวจริงและข่าวปลอม จงวิเคราะห์เนื้อหาและตัดสินใจว่าข่าวนั้น "น่าเชื่อถือ" หรือ "ไม่น่าเชื่อถือ"</p>
@@ -1192,10 +1190,39 @@
 
     <script src="scirpt.js"></script>
     <script>
-// === Fake News Detector Game ===
-// ระบบเกมตรวจจับข่าวปลอม 6 ด่าน (สุ่มลำดับ)
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const line1 = document.getElementById('hamburger-line-1');
+        const line2 = document.getElementById('hamburger-line-2');
+        const line3 = document.getElementById('hamburger-line-3');
+        let menuOpen = false;
 
-var fakeNewsPool = [
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                mobileMenu.classList.remove('hidden');
+                line1.style.transform = 'rotate(45deg) translate(4px, 4px)';
+                line2.style.opacity = '0';
+                line3.style.transform = 'rotate(-45deg) translate(4px, -4px)';
+            } else {
+                closeMobileMenu();
+            }
+        });
+
+        function closeMobileMenu() {
+            menuOpen = false;
+            mobileMenu.classList.add('hidden');
+            line1.style.transform = '';
+            line2.style.opacity = '1';
+            line3.style.transform = '';
+        }
+
+        function toggleMyth(card) {
+            card.classList.toggle('flipped');
+        }
+    </script>
+</body>
+</html>
     {
         id: "fn1",
         isFake: true,
