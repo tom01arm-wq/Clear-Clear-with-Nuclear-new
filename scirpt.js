@@ -1288,8 +1288,10 @@ const fakeNewsGame = {
         correctVerdicts: 0,
         foundSuspicious: 0,
         missedSuspicious: 0,
-        wrongClicks: 0
-    }
+        wrongClicks: 0,
+        hintsUsed: 0
+    },
+    hintUnlocked: false,
 };
 
 function initFakeNewsGame() {
@@ -1337,8 +1339,10 @@ function startFakeNewsGame() {
         correctVerdicts: 0,
         foundSuspicious: 0,
         missedSuspicious: 0,
-        wrongClicks: 0
+        wrongClicks: 0,
+        hintsUsed: 0
     };
+    fakeNewsGame.hintUnlocked = false;
 
     const shuffledPool = shuffleArray(fakeNewsPool);
     fakeNewsGame.roundSet = shuffledPool.slice(0, fakeNewsGame.totalRounds);
@@ -1375,6 +1379,7 @@ function renderFakeNewsRound() {
     fakeNewsGame.answered = false;
     fakeNewsGame.selectedHotspots = new Set();
     fakeNewsGame.roundStartTime = Date.now();
+    fakeNewsGame.hintUnlocked = false;
 
     const progress = Math.round(((fakeNewsGame.currentRound + 1) / fakeNewsGame.totalRounds) * 100);
     const bodyHtml = renderFakeNewsBody(roundData.body);
@@ -1423,9 +1428,9 @@ function renderFakeNewsRound() {
             </div>
 
             <div class="grid md:grid-cols-3 gap-3 mb-4">
-                <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                    <p class="text-xs text-green-700">💡 ตัวช่วย</p>
-                    <p class="text-sm font-bold text-green-800">${suspiciousCount > 0 ? `มีหลักฐานให้ค้นหา ${suspiciousCount === 1 ? '1 จุด' : suspiciousCount <= 3 ? '2-3 จุด' : 'หลายจุด'}` : 'ข่าวนี้ไม่มีจุดน่าสงสัย'}</p>
+                <div id="hint-box" class="bg-green-50 border border-green-200 rounded-xl p-3 text-center cursor-pointer transition-all hover:bg-green-100" onclick="unlockHint()">
+                    <p class="text-xs text-green-700">💡 ตัวช่วย (ล็อก)</p>
+                    <p id="hint-text" class="text-sm font-bold text-green-800">🔒 ใช้ 50 คะแนนเพื่อปลดล็อก</p>
                 </div>
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
                     <p class="text-xs text-blue-700">จุดที่คุณเลือก</p>
@@ -1489,6 +1494,41 @@ function toggleFakeNewsSpot(spotId) {
         target.classList.toggle('ring-amber-400');
         target.classList.toggle('bg-amber-100');
     });
+}
+
+function unlockHint() {
+    if (fakeNewsGame.answered || fakeNewsGame.hintUnlocked) return;
+    
+    const HINT_COST = 50;
+    if (fakeNewsGame.score < HINT_COST) {
+        alert('คะแนนไม่พอ! ต้องการ 50 คะแนนเพื่อปลดล็อกตัวช่วย');
+        return;
+    }
+    
+    fakeNewsGame.score -= HINT_COST;
+    fakeNewsGame.hintUnlocked = true;
+    fakeNewsGame.stats.hintsUsed++;
+    
+    const roundData = fakeNewsGame.roundSet[fakeNewsGame.currentRound];
+    const suspiciousCount = roundData.hotspots.filter((spot) => spot.isSuspicious).length;
+    
+    const hintText = document.getElementById('hint-text');
+    const hintBox = document.getElementById('hint-box');
+    const scoreDisplay = document.querySelector('.text-emerald-700');
+    
+    if (hintText && hintBox) {
+        hintBox.classList.remove('cursor-pointer', 'hover:bg-green-100');
+        hintBox.classList.add('bg-green-100', 'border-green-400');
+        hintBox.onclick = null;
+        
+        hintText.innerHTML = suspiciousCount > 0 
+            ? `✅ ${suspiciousCount === 1 ? 'มีหลักฐาน 1 จุด' : suspiciousCount <= 3 ? 'มีหลักฐาน 2-3 จุด' : 'มีหลักฐานหลายจุด'}` 
+            : '✅ ข่าวนี้ไม่มีจุดน่าสงสัย';
+    }
+    
+    if (scoreDisplay) {
+        scoreDisplay.textContent = `คะแนน: ${fakeNewsGame.score}`;
+    }
 }
 
 function submitFakeNewsVerdict(userThinksCredible) {
