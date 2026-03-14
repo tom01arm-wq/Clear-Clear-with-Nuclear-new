@@ -234,6 +234,10 @@ function loadQuiz() {
     // สร้างปุ่มตัวเลือกคำตอบ
     const optionsDiv = document.getElementById('options');
     optionsDiv.innerHTML = '';               // ล้างปุ่มเก่าออกก่อน
+    
+    // ลบ feedback div เก่า (เฉลยข้อก่อนหน้า) ออกให้ไม่ค้างต่อกัน
+    const oldFeedback = optionsDiv.parentElement.querySelector('.quiz-feedback');
+    if (oldFeedback) oldFeedback.remove();
     const labels = ['ก.', 'ข.', 'ค.', 'ง.']; // ป้ายกำกับตัวเลือก
     quizShuffledOptions.forEach((opt, idx) => {              // วนลูปสร้างปุ่มทีละตัว
         const btn = document.createElement('button');
@@ -273,7 +277,7 @@ function checkAnswer(idx, selectedBtn) {
     // แสดงคำอธิบาย (explanation) ถ้ามี
     if (q.explanation) {
         const feedbackDiv = document.createElement('div');
-        feedbackDiv.className = `mt-6 rounded-xl p-6 border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`;
+        feedbackDiv.className = `quiz-feedback mt-6 rounded-xl p-6 border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`;
         feedbackDiv.innerHTML = `
             <div class="flex items-start">
                 <div class="w-12 h-12 ${isCorrect ? 'bg-green-500' : 'bg-red-500'} rounded-full flex items-center justify-center mr-4 flex-shrink-0">
