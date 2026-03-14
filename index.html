@@ -912,8 +912,16 @@
                                 <p>ทนต่อความเค็ม</p>
                             </div>
                         </div>
+                        <!-- เพิ่มรูปภาพผลผลิตพืช -->
+                        <div class="mt-6 text-center">
+                            <img src="ผลผลิตพืช.png" 
+                                 alt="ผลผลิตพืชที่ได้จากการปรับปรุงพันธุ์ด้วยรังสี" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">ผลผลิตพืชที่ได้จากการปรับปรุงพันธุ์ด้วยรังสี</p>
+                        </div>
                     </div>
-                    <div class="bg-teal-50 rounded-2xl p-8">
+                    <div class="bg-teal-50 rounded-2xl p-8 border-l-4 border-teal-500">
                         <h5 class="text-xl font-bold text-teal-700 mb-4">
                             <i class="fas fa-bug mr-2"></i>การกำจัดและทำหมันแมลง
                         </h5>
@@ -930,6 +938,14 @@
                                 <span class="text-sm">ทำหมันแมลงตัวผู้แล้วปล่อยผสมพันธุ์</span>
                             </li>
                         </ul>
+                        <!-- เพิ่มรูปภาพยุง -->
+                        <div class="mt-6 text-center">
+                            <img src="ยุง4.png" 
+                                 alt="การกำจัดและทำหมันแมลงด้วยรังสี" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">การกำจัดและทำหมันแมลงด้วยรังสี: ทางเลือกที่ปลอดภัยกว่าสารเคมี</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -946,22 +962,58 @@
                     <div class="bg-orange-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow">
                         <i class="fas fa-ruler-combined text-4xl text-orange-500 mb-4"></i>
                         <h5 class="font-bold mb-2">ระบบวัดและควบคุม</h5>
-                        <p class="text-sm text-gray-600">วัดระดับของเหลว ความหนาแน่น ความชื้น</p>
+                        <p class="text-sm text-gray-600 cursor-pointer hover:text-orange-600 font-medium" onclick="toggleImage('industrial-measurement')">วัดระดับของเหลว ความหนาแน่น ความชื้น</p>
+                        
+                        <!-- Industrial Measurement Image (Hidden by default) -->
+                        <div id="industrial-measurement" class="hidden mt-4 text-center">
+                            <img src="ระบบวัดและควบคุม.jpg" 
+                                 alt="ระบบวัดและควบคุมทางอุตสาหกรรม" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">ระบบวัดและควบคุม: วัดระดับของเหลว ความหนาแน่น ความชื้น</p>
+                        </div>
                     </div>
                     <div class="bg-orange-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow">
                         <i class="fas fa-flask text-4xl text-orange-500 mb-4"></i>
                         <h5 class="font-bold mb-2">กระบวนการผลิต</h5>
-                        <p class="text-sm text-gray-600">เสริมคุณภาพยาง ฉนวนไฟฟ้า บำบัดน้ำเสีย</p>
+                        <p class="text-sm text-gray-600 cursor-pointer hover:text-orange-600 font-medium" onclick="toggleImage('industrial-production')">เสริมคุณภาพยาง ฉนวนไฟฟ้า บำบัดน้ำเสีย</p>
+                        
+                        <!-- Industrial Production Image (Hidden by default) -->
+                        <div id="industrial-production" class="hidden mt-4 text-center">
+                            <img src="ยางรถ.png" 
+                                 alt="กระบวนการผลิตทางอุตสาหกรรม" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">กระบวนการผลิต: เสริมคุณภาพยาง ฉนวนไฟฟ้า บำบัดน้ำเสีย</p>
+                        </div>
                     </div>
                     <div class="bg-orange-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow">
                         <i class="fas fa-search text-4xl text-orange-500 mb-4"></i>
                         <h5 class="font-bold mb-2">ตรวจสอบไม่ทำลาย</h5>
-                        <p class="text-sm text-gray-600">ถ่ายภาพโครงสร้างสะพาน รอยเชื่อมโลหะ</p>
+                        <p class="text-sm text-gray-600 cursor-pointer hover:text-orange-600 font-medium" onclick="toggleImage('industrial-inspection')">ถ่ายภาพโครงสร้างสะพาน รอยเชื่อมโลหะ</p>
+                        
+                        <!-- Industrial Inspection Image (Hidden by default) -->
+                        <div id="industrial-inspection" class="hidden mt-4 text-center">
+                            <img src="ถ่ายรูปรังสี.jpg" 
+                                 alt="ตรวจสอบไม่ทำลายด้วยรังสี" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">ตรวจสอบไม่ทำลาย: ถ่ายภาพโครงสร้างสะพาน รอยเชื่อมโลหะ</p>
+                        </div>
                     </div>
                     <div class="bg-orange-50 p-6 rounded-xl text-center hover:shadow-lg transition-shadow">
                         <i class="fas fa-tachometer-alt text-4xl text-orange-500 mb-4"></i>
                         <h5 class="font-bold mb-2">วัดอัตราเร็วการไหล</h5>
-                        <p class="text-sm text-gray-600">ตรวจรอยรั่วในท่อและระบบ</p>
+                        <p class="text-sm text-gray-600 cursor-pointer hover:text-orange-600 font-medium" onclick="toggleImage('industrial-flow')">ตรวจรอยรั่วในท่อและระบบ</p>
+                        
+                        <!-- Industrial Flow Measurement Image (Hidden by default) -->
+                        <div id="industrial-flow" class="hidden mt-4 text-center">
+                            <img src="วัดการรั่ว.png" 
+                                 alt="วัดอัตราเร็วการไหลและการรั่ว" 
+                                 class="rounded-lg shadow-md mx-auto max-w-full"
+                                 loading="lazy">
+                            <p class="text-xs text-gray-600 mt-2">วัดอัตราเร็วการไหล: ตรวจรอยรั่วในท่อและระบบ</p>
+                        </div>
                     </div>
                 </div>
             </div>
